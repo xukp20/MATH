@@ -36,6 +36,7 @@ if __name__ == "__main__":
             for json_file in os.listdir(category_path):
                 json_path = os.path.join(category_path, json_file)
                 output_json_path = os.path.join(output_category_path, json_file.strip('.json') + '.asy')
+
                 with open(json_path, 'r', encoding='utf-8') as f:
                     data = json.load(f)
                 # find the problems with [asy]
@@ -44,10 +45,15 @@ if __name__ == "__main__":
                     start = data['problem'].find('[asy]')
                     end = data['problem'].find('[/asy]')
                     asy_content = data['problem'][start+5:end]
+                    count[set][category] += 1
+
+                    # skip if the file exists
+                    if os.path.exists(output_json_path):
+                        continue
+                    
                     # write the content to a file
                     with open(output_json_path, 'w', encoding='utf-8') as f:
                         f.write(asy_content.strip())
-                    count[set][category] += 1
 
         print('set: {}\n count: {}\n total: {}\n'.format(set, count[set], total[set]))
     

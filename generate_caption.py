@@ -60,10 +60,17 @@ if __name__ == "__main__":
         
         files = os.listdir(category_path)
         for file in tqdm(files, desc=category):
+            # if output file exists, skip
+            if os.path.exists(os.path.join(output_category_path, file.replace('.asy', '.txt'))):
+                continue
+
             file_path = os.path.join(category_path, file)
             with open(file_path, 'r', encoding='utf-8') as f:
                 asy_command = f.read()
+
+            # call model
             caption = gpt_req(get_messages(asy_command), temperature=args.temperature, max_tokens=args.max_tokens, top_p=args.top_p)
+            
             with open(os.path.join(output_category_path, file.replace('.asy', '.txt')), 'w', encoding='utf-8') as f:
                 f.write(caption)
 
