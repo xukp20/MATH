@@ -45,7 +45,7 @@ if __name__ == "__main__":
                     end = data['problem'].find('[/asy]')
                     asy_content = data['problem'][start+5:end]
                     # write the content to a file
-                    with open(output_json_path, 'w') as f:
+                    with open(output_json_path, 'w', encoding='utf-8') as f:
                         f.write(asy_content.strip())
                     count[set][category] += 1
 
