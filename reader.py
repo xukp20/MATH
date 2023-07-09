@@ -28,6 +28,8 @@ def test_asy_reader(path=DEFAULT_PATH, help_model='3.5'):
             with open(problem_file, 'r', encoding='utf-8') as f:
                 problem = json.loads(f.read())
             problem['description'] = description
+            # mark the problem
+            problem['id'] = category + '_' + desc_file.strip('.txt')
 
             # produce sample 
             yield problem
