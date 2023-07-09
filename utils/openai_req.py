@@ -38,7 +38,8 @@ def save_log():
     global GPT4_count
     global DAVINCI_003_count
     import time
-    with open('log.txt', 'w') as f:
+    # append
+    with open('log.txt', 'a') as f:
         current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         f.write(f'time: {current_time}\n')
         f.write(f'  GPT3.5: {GPT3dot5_count}\n')
@@ -78,9 +79,9 @@ def gpt4_req(messages, temperature=1, max_tokens=1000, top_p=1, n=1):
 
 def text_davinci_003_req(messages, temperature=1, max_tokens=1000, top_p=1, n=1):
     model = "text-davinci-003"
-    response = openai.openai.Completion.create(
+    response = openai.Completion.create(
         model=model,
-        prompt='\n'.join(messages),
+        prompt='\n'.join([message["content"] for message in messages]), # [message["content"] for message in messages
         temperature=temperature,
         max_tokens=max_tokens,
         top_p=top_p,

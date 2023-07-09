@@ -51,8 +51,8 @@ if __name__ == "__main__":
     if not os.path.exists(output_path):
         os.makedirs(output_path)
     
-    reset()
     for category in categories:
+        reset()
         category_path = os.path.join(path, category)
         output_category_path = os.path.join(output_path, category)
         if not os.path.exists(output_category_path):
@@ -73,8 +73,8 @@ if __name__ == "__main__":
             
             with open(os.path.join(output_category_path, file.replace('.asy', '.txt')), 'w', encoding='utf-8') as f:
                 f.write(caption)
+        save_log()
 
-    save_log()
 
 
 

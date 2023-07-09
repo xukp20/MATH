@@ -3,3 +3,5 @@ asy/
 MATH/
 **/__pycache__/
 caption_*/
+**/*.tar.gz
+**/*.zip
