@@ -89,7 +89,7 @@ def main():
             f.write('\n')
 
     from reader import test_prm800k_asy_reader, DEFAULT_PATH
-    generator = test_prm800k_asy_reader(DEFAULT_PATH)
+    generator = test_prm800k_asy_reader(DEFAULT_PATH, args.help_model)
     for i in tqdm(range(TOTAL_TEST), desc='Testing'):
         try:
             problem = next(generator)
