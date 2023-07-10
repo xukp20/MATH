@@ -9,6 +9,7 @@ import json
 def get_parser():
     parser = argparse.ArgumentParser(description='Test LLaMa test set')
     parser.add_argument('-r', '--result', type=str, default='/data/xukp/result', help='result dir')
+    parser.add_argument('-c', '--check', action='store_true', help='check the result')
     return parser
 
 def main(args):
@@ -25,13 +26,18 @@ def main(args):
         total += 1
         if result['correct']:
             correct += 1
+        elif result.get('recheck', False):
+            recheck_correct += 1
         else:
-            # manual recheck
-            print('ID: {}'.format(result['id']))
-            print('Answer: {}'.format(result['answer']))
-            print('Model Answer: {}'.format(result['model_answer']))
             # input
-            recheck_answer = input('Recheck Answer: ')
+            if args.check:
+                # manual recheck
+                print('ID: {}'.format(result['id']))
+                print('Answer: {}'.format(result['answer']))
+                print('Model Answer: {}'.format(result['model_answer']))
+                recheck_answer = input('Recheck Answer: ')
+            else:
+                recheck_answer = 'n'
             if recheck_answer == 'y':
                 recheck_correct += 1
                 recheck_ids.append(result['id'])
@@ -46,7 +52,6 @@ def main(args):
                 out_of_length_ids.append(result['id'])
             else:
                 wrong_ids.append(result['id'])
-            print('---')
     print('Total: {}'.format(total))
     print('Correct: {}'.format(correct))
     print('Recheck Correct: {}'.format(recheck_correct))

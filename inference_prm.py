@@ -14,14 +14,14 @@ import torch
 import argparse
 from tqdm import tqdm
 
-TOTAL_TEST = 419    # total count for tqdm
+TOTAL_TEST = 42    # total count for tqdm
 
 def get_parser():
     parser = argparse.ArgumentParser(description='Test LLaMa test set')
     parser.add_argument('-d', '--desp', action='store_true', help='use picture description')
     parser.add_argument('-m', '--help_model', type=str, default='3.5', help='description generator', choices=['3.5', '4', 'text'])
-    parser.add_argument('--log', type=str, default='log.txt', help='log file')
-    parser.add_argument('--result', type=str, default='/data/xukp/result', help='result dir')
+    parser.add_argument('--log', type=str, default='prm_log.txt', help='log file')
+    parser.add_argument('--result', type=str, default='/data/xukp/prm_result', help='result dir')
     parser.add_argument('--start', type=int, default=0)
     parser.add_argument('--end', type=int, default=TOTAL_TEST)
     return parser
@@ -88,8 +88,8 @@ def main():
                 f.write('{}\n'.format(i))
             f.write('\n')
 
-    from reader import test_asy_reader, DEFAULT_PATH
-    generator = test_asy_reader(path=DEFAULT_PATH, help_model=args.help_model)
+    from reader import test_prm800k_asy_reader, DEFAULT_PATH
+    generator = test_prm800k_asy_reader(DEFAULT_PATH)
     for i in tqdm(range(TOTAL_TEST), desc='Testing'):
         try:
             problem = next(generator)
@@ -143,7 +143,9 @@ def main():
         # if no answer, try to get from the model's solution
         model_solution = out['solution']
         if model_answer == '':
-            model_answer = re.search(answer_pat, model_solution).groups()[0]
+            match = re.search(answer_pat, model_solution)
+            if match:
+                model_answer = re.search(answer_pat, model_solution).groups()[0]
 
         answer = re.search(answer_pat, problem['solution']).groups()[0]
 
