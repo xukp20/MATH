@@ -46,7 +46,7 @@ Problem: {{problem}}
 Description: {{description}}
 
 ### Response:
-Solution: {{gen "solution" temperature=0. max_tokens=400 stop='Answer'}}
+Solution: {{gen "solution" temperature=0. max_tokens=1200 stop='Answer'}}
 Answer: {{gen "answer" temperature=0. max_tokens=50 stop='\n'}}
 """
 
@@ -67,6 +67,6 @@ Answer: {{this.answer}}
 Problem: {{problem}}
 
 ### Response:
-Solution: {{gen "solution" temperature=0. max_tokens=400 stop='Answer'}}
+Solution: {{gen "solution" temperature=0. max_tokens=1200 stop='Answer'}}
 Answer: {{gen "answer" temperature=0. max_tokens=50 stop='\n'}}
 """

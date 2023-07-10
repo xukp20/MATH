@@ -55,7 +55,8 @@ def main():
     # statistics
     correct = 0
     total = 0
-    wrong_ids = []    
+    wrong_ids = [] 
+    error_ids = []   
 
     # settings
     answer_pat = r'boxed\{(.*)\}'
@@ -67,7 +68,13 @@ def main():
             f.write('\n\nTime: {}\n'.format(current_time))
             acc = correct / total
             f.write('Correct: {}/{}={:.2f}%\n'.format(correct, total, acc*100))
+            if len(wrong_ids) > 0:
+                f.write('Wrong:\n')
             for i in wrong_ids:
+                f.write('{}\n'.format(i))
+            if len(error_ids) > 0:
+                f.write('Error when generating:\n')
+            for i in error_ids:
                 f.write('{}\n'.format(i))
             f.write('\n')
 
@@ -76,17 +83,24 @@ def main():
     for _ in tqdm(range(TOTAL_TEST), desc='Testing'):
         try:
             problem = next(generator)
+        except:
+            save_log()
+            return
+        
+        try:
             out = program(
                 examples=EXAMPLES,
                 problem=problem,
             )
+            # test
+            model_answer = out['answer']
         except Exception as e:
             print(e)
-            save_log()
-            return
+            if out:
+                print(out)
+            error_ids.append(problem['id'])
+            continue
         
-        # test
-        model_answer = out['answer']
         # get answer
         import re
         
@@ -108,8 +122,10 @@ def main():
             wrong_ids.append(problem['id'])
 
         # save result
+        problem['answer'] = answer
         problem['model_answer'] = model_answer
         problem['model_solution'] = model_solution
+        problem['correct'] = (model_answer == answer)
 
         # save
         with open(os.path.join(args.result, '{}.json'.format(problem['id'])), 'w', encoding='utf-8') as f:
