@@ -24,6 +24,7 @@ def get_parser():
     parser.add_argument('--result', type=str, default='/data/xukp/prm_result', help='result dir')
     parser.add_argument('--start', type=int, default=0)
     parser.add_argument('--end', type=int, default=TOTAL_TEST)
+    parser.add_argument('-s', '--strip', action='store_true', help='strip the [asy] from the problem when loading')
     return parser
 
 
@@ -51,9 +52,6 @@ def main():
     # use LLaMa 65b
     print('Loading LLaMa 65b')
     guidance.llm = guidance.llms.transformers.LLaMA(MODEL, device_map="auto", token_healing=True, torch_dtype=torch.bfloat16)
-
-    # we can pre-define valid option sets
-    valid_judgement = ["True", "False", "Unknown"]
 
     # program
     pattern = PATTERN_W_DESC if args.desp else PATTERN_WO_DESC
@@ -88,8 +86,11 @@ def main():
                 f.write('{}\n'.format(i))
             f.write('\n')
 
-    from reader import test_prm800k_asy_reader, DEFAULT_PATH
-    generator = test_prm800k_asy_reader(DEFAULT_PATH, args.help_model)
+    from reader import test_prm800k_asy_reader, DEFAULT_PATH, test_prm800k_asy_strip_reader
+    if args.strip:
+        generator = test_prm800k_asy_strip_reader(DEFAULT_PATH, args.help_model)
+    else:
+        generator = test_prm800k_asy_reader(DEFAULT_PATH, args.help_model)
     for i in tqdm(range(TOTAL_TEST), desc='Testing'):
         try:
             problem = next(generator)

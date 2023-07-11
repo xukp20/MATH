@@ -24,6 +24,8 @@ def get_parser():
     parser.add_argument('--result', type=str, default='/data/xukp/result', help='result dir')
     parser.add_argument('--start', type=int, default=0)
     parser.add_argument('--end', type=int, default=TOTAL_TEST)
+    parser.add_argument('-s', '--strip', action='store_true', help='strip the [asy] from the problem when loading')
+
     return parser
 
 
@@ -88,8 +90,12 @@ def main():
                 f.write('{}\n'.format(i))
             f.write('\n')
 
-    from reader import test_asy_reader, DEFAULT_PATH
-    generator = test_asy_reader(path=DEFAULT_PATH, help_model=args.help_model)
+    from reader import test_asy_reader, DEFAULT_PATH, test_asy_strip_reader
+    if args.strip:
+        generator = test_asy_strip_reader(path=DEFAULT_PATH, help_model=args.help_model)
+    else:
+        generator = test_asy_reader(path=DEFAULT_PATH, help_model=args.help_model)
+        
     for i in tqdm(range(TOTAL_TEST), desc='Testing'):
         try:
             problem = next(generator)

@@ -11,6 +11,8 @@ DESCS = {
     'text': 'caption_text-davinci-003',
 }
 
+
+# for the original MATH dataset
 # generator of the problems in test set with [asy]
 def test_asy_reader(path=DEFAULT_PATH, help_model='3.5'):
     # go through each problem in each category of the test set
@@ -36,6 +38,25 @@ def test_asy_reader(path=DEFAULT_PATH, help_model='3.5'):
             yield problem
 
 
+# strip [asy] command from the problem text
+def strip_asy(problem):
+    problem_text = problem['problem']
+
+    # remove text in [asy] ... [/asy]
+    pattern = re.compile(r'\[asy\].*?\[/asy\]', re.S)
+    problem_text = re.sub(pattern, '', problem_text)
+
+    problem['problem'] = problem_text
+
+    return problem
+
+
+def test_asy_strip_reader(path=DEFAULT_PATH, help_model='3.5'):
+    for problem in test_asy_reader(path=path, help_model=help_model):
+        yield strip_asy(problem)
+
+
+# for the subset of 500 problems in test set of prm800k math
 PRM800K = 'prm800k'
 # generator of the 500 problems in test set of prm800k math
 def test_prm800k_reader(path=DEFAULT_PATH):
@@ -56,8 +77,7 @@ def test_prm800k_reader(path=DEFAULT_PATH):
 # generator of the 500 problems in test set of prm800k math with asy
 def test_prm800k_asy_reader(path=DEFAULT_PATH, help_model='3.5'):
     # all the test problems in jsonl file
-    import os, json
-    test_path = os.path.join(path, PRM800K, 'test.jsonl')
+    import os
     for problem in test_prm800k_reader(path=path):
         problem_text = problem['problem']
         # if no [asy] in problem, skip
@@ -85,17 +105,7 @@ def test_prm800k_asy_reader(path=DEFAULT_PATH, help_model='3.5'):
         # produce sample
         yield problem
 
-# strip [asy] command from the problem text
-def strip_asy(problem):
-    problem_text = problem['problem']
 
-    # remove text in [asy] ... [/asy]
-    pattern = re.compile(r'\[asy\].*?\[/asy\]', re.S)
-    problem_text = re.sub(pattern, '', problem_text)
-
-    problem['problem'] = problem_text
-
-    return problem
 
 def test_prm800k_asy_strip_reader(path=DEFAULT_PATH, help_model='3.5'):
     for problem in test_prm800k_asy_reader(path=path, help_model=help_model):
