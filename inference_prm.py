@@ -47,6 +47,7 @@ def main():
     print("help_model: {}".format(args.help_model))
     print("log: {}".format(args.log))
     print("result: {}".format(args.result))
+    print("strip: {}".format(args.strip))
     
     
     # use LLaMa 65b

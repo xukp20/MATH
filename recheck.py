@@ -10,6 +10,7 @@ def get_parser():
     parser = argparse.ArgumentParser(description='Test LLaMa test set')
     parser.add_argument('-r', '--result', type=str, default='/data/xukp/result', help='result dir')
     parser.add_argument('-c', '--check', action='store_true', help='check the result')
+    parser.add_argument('-i', '--id', type=str, default='prm800k_asy_ids.txt', help='id file')
     return parser
 
 def main(args):
@@ -17,17 +18,32 @@ def main(args):
     correct = 0
     recheck_correct = 0
     out_of_length = 0
+    error = 0
     out_of_length_ids = []
     wrong_ids = []
     recheck_ids = []
-    for file in os.listdir(args.result):
+    error_ids = []
+
+
+    with open(args.id, 'r', encoding='utf-8') as f:
+        ids = [line.strip() for line in f.readlines()]
+
+    for file in ids:
+        file = file + '.json'
+        total += 1
+        file_path = os.path.join(args.result, file)
+        if not os.path.exists(file_path):
+            error += 1
+            error_ids.append(file)
+            continue
+
         with open(os.path.join(args.result, file), 'r', encoding='utf-8') as f:
             result = json.load(f)
-        total += 1
         if result['correct']:
             correct += 1
         elif result.get('recheck', False):
             recheck_correct += 1
+            recheck_ids.append(result['id'])
         else:
             # input
             if args.check:
@@ -57,13 +73,20 @@ def main(args):
     print('Recheck Correct: {}'.format(recheck_correct))
     print('Out of Length: {}'.format(out_of_length))
     print('Wrong: {}'.format(len(wrong_ids)))
-    assert total == correct + len(wrong_ids) + recheck_correct + out_of_length
-    with open('recheck_ids.txt', 'w', encoding='utf-8') as f:
+    print('Error: {}'.format(error))
+    assert total == correct + len(wrong_ids) + recheck_correct + out_of_length + error
+
+    if not os.path.exists('recheck'):
+        os.mkdir('recheck')
+
+    with open('recheck/recheck_ids.txt', 'w', encoding='utf-8') as f:
         f.write('\n'.join(recheck_ids))
-    with open('out_of_length_ids.txt', 'w', encoding='utf-8') as f:
+    with open('recheck/out_of_length_ids.txt', 'w', encoding='utf-8') as f:
         f.write('\n'.join(out_of_length_ids))
-    with open('wrong_ids.txt', 'w', encoding='utf-8') as f:
+    with open('recheck/wrong_ids.txt', 'w', encoding='utf-8') as f:
         f.write('\n'.join(wrong_ids))
+    with open('recheck/error_ids.txt', 'w', encoding='utf-8') as f:
+        f.write('\n'.join(error_ids))
 
 
 if __name__ == '__main__':

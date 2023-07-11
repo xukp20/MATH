@@ -48,6 +48,7 @@ def main():
     print("help_model: {}".format(args.help_model))
     print("log: {}".format(args.log))
     print("result: {}".format(args.result))
+    print("strip: {}".format(args.strip))
     
     
     # use LLaMa 65b
@@ -95,7 +96,7 @@ def main():
         generator = test_asy_strip_reader(path=DEFAULT_PATH, help_model=args.help_model)
     else:
         generator = test_asy_reader(path=DEFAULT_PATH, help_model=args.help_model)
-        
+
     for i in tqdm(range(TOTAL_TEST), desc='Testing'):
         try:
             problem = next(generator)
@@ -149,7 +150,9 @@ def main():
         # if no answer, try to get from the model's solution
         model_solution = out['solution']
         if model_answer == '':
-            model_answer = re.search(answer_pat, model_solution).groups()[0]
+            match = re.search(answer_pat, model_solution)
+            if match:
+                model_answer = re.search(answer_pat, model_solution).groups()[0]
 
         answer = re.search(answer_pat, problem['solution']).groups()[0]
 
