@@ -20,9 +20,9 @@ The instruction may could be better.
 
 Results with captions of gpt models on 42 samples of prm800k
 
-| model                    | raw LLaMa | w gpt3.5 | w gpt4 | w text | w gpt 3.5 strip | w gpt4 strip | with text strip |
-| ------------------------ | --------- | -------- | ------ | ------ | --------------- | ------------ | --------------- |
-| correct (same + recheck) | 1 + 1     | 2 + 4    | 0 + 4  | 1 + 4  | 1 + 1           | 1 + 1        | 1 + 2           |
+| model                    | raw LLaMa 65B | w gpt3.5 | w gpt4 | w text | w gpt 3.5 strip | w gpt4 strip | with text strip |
+| ------------------------ | ------------- | -------- | ------ | ------ | --------------- | ------------ | --------------- |
+| correct (same + recheck) | 1 + 1         | 2 + 4    | 0 + 4  | 1 + 4  | 1 + 1           | 1 + 1        | 1 + 2           |
 
 | correct + recheck | raw                             | 3.5                                                          | 4                                                            | text                                                         | 3.5 strip                   | 4 strip                   | text strip                                              |
 | ----------------- | ------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | --------------------------- | ------------------------- | ------------------------------------------------------- |
@@ -30,6 +30,31 @@ Results with captions of gpt models on 42 samples of prm800k
 
 
 
-math start 98
+419 MATH test with asy
 
-> python inference.py --result /data/xukp/math_result  --log math_log.txt --start=98
+| MATH              | raw LLaMa | w 3.5   |
+| ----------------- | --------- | ------- |
+| correct + recheck | 15+9      | 11 + 11 |
+| fail              | 27        | 77      |
+
+- LLaMa: 
+  - algebra_489
+    counting_and_probability_250
+    counting_and_probability_281
+    counting_and_probability_288
+    counting_and_probability_328
+    geometry_145
+    geometry_15
+    geometry_242
+    geometry_267
+    geometry_375
+    geometry_47
+    prealgebra_1040
+    prealgebra_1375
+    prealgebra_1507
+    prealgebra_930
+- GPT3.5-turbo
+  - 
+
+
+

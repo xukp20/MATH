@@ -105,7 +105,7 @@ def main():
             save_log()
             return
         
-        if i < args.start:
+        if i < args.start or os.path.exists(os.path.join(args.result, '{}.json'.format(problem['id']))):
             # load from result
             if not os.path.exists(os.path.join(args.result, '{}.json'.format(problem['id']))):
                 error_ids.append(problem['id'])

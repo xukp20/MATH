@@ -19,6 +19,7 @@ def main(args):
     recheck_correct = 0
     out_of_length = 0
     error = 0
+    correct_ids = []
     out_of_length_ids = []
     wrong_ids = []
     recheck_ids = []
@@ -41,9 +42,18 @@ def main(args):
             result = json.load(f)
         if result['correct']:
             correct += 1
+            correct_ids.append(result['id'])
         elif result.get('recheck', False):
             recheck_correct += 1
             recheck_ids.append(result['id'])
+        elif result.get('recheck', True) == False:
+            # exist and false
+            if result['model_answer'] == '[':
+                out_of_length += 1
+                out_of_length_ids.append(result['id'])
+            else:
+                wrong_ids.append(result['id'])
+
         else:
             # input
             if args.check:
@@ -52,22 +62,29 @@ def main(args):
                 print('Answer: {}'.format(result['answer']))
                 print('Model Answer: {}'.format(result['model_answer']))
                 recheck_answer = input('Recheck Answer: ')
+
+                if recheck_answer == 'y':
+                    # save
+                    result['recheck'] = True
+                else:
+                    result['recheck'] = False
+
+                with open(os.path.join(args.result, file), 'w', encoding='utf-8') as f:
+                    json.dump(result, f, indent=4, ensure_ascii=False)
+                    
             else:
                 recheck_answer = 'n'
             if recheck_answer == 'y':
                 recheck_correct += 1
                 recheck_ids.append(result['id'])
-                # save
-                result['recheck'] = True
-
-                with open(os.path.join(args.result, file), 'w', encoding='utf-8') as f:
-                    json.dump(result, f, indent=4, ensure_ascii=False)
+                
             # check length
             elif result['model_answer'] == '[':
                 out_of_length += 1
                 out_of_length_ids.append(result['id'])
             else:
                 wrong_ids.append(result['id'])
+
     print('Total: {}'.format(total))
     print('Correct: {}'.format(correct))
     print('Recheck Correct: {}'.format(recheck_correct))
@@ -79,6 +96,8 @@ def main(args):
     if not os.path.exists('recheck'):
         os.mkdir('recheck')
 
+    with open('recheck/correct_ids.txt', 'w', encoding='utf-8') as f:
+        f.write('\n'.join(correct_ids))
     with open('recheck/recheck_ids.txt', 'w', encoding='utf-8') as f:
         f.write('\n'.join(recheck_ids))
     with open('recheck/out_of_length_ids.txt', 'w', encoding='utf-8') as f:

@@ -25,9 +25,12 @@ ASY_INSTRUCTION = """You are given a asy command of latex, please describe the e
 3. try to produce high level description. For example, four lines may be concluded as a square. 
 4. Don't describe details like the lines' width or thickness."""
 
+
+ASY_INSTRUCTION_V2 = """You are given a asy command of latex, which is related to a math problem, please provide a short description of the elements inside the picture, including essential information useful for solving the problem."""
+
 def get_messages(asy_command):
     return [
-        {"role": "system", "content": ASY_INSTRUCTION},
+        {"role": "system", "content": ASY_INSTRUCTION_V2},
         {"role": "user", "content": asy_command}
     ]
 
