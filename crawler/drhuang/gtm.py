@@ -15,7 +15,7 @@ import json
 
 def get_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-o', '--output_dir', type=str, default='/data/xukp/gtm', help='the directory to store the gtm books')
+    parser.add_argument('-o', '--output_dir', type=str, default='/data/xukp/drhuang/gtm', help='the directory to store the gtm books')
     parser.add_argument('-i', '--index_file', type=str, default='index.json', help='the index file of gtm , name to url')
     return parser
 
