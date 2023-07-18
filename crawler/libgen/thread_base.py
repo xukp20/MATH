@@ -39,6 +39,21 @@ def get_page(url, params=None, **kwargs):
         return requests.get(url, params=params, proxies=PROXIES, **kwargs)
     
 
+### Multi Thread Settings
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from threading import Lock
+
+# tool: find total file number
+def find_total_num(first_page: str):
+    soup = BeautifulSoup(first_page, 'html.parser')
+    try:
+        # find the second table
+        table = soup.find_all('table')[1]
+        total_num = int(table.find('tr').find('td', align='left').find('font').text.split(' ')[0])
+    except:
+        total_num = 0
+    return total_num
+
 ### Build index
 
 def parse_mirror1(page_url):
@@ -174,7 +189,7 @@ def download_book(book, output_dir, cover=False):
         - If starts with http, download directly and get the file name as the finally part
         - Else (get.php) add LIBGEN_PREFIX and download, use title as the file name
     """
-    tqdm.write("Downloading {}".format(book['book_title']))
+    # tqdm.write("Downloading {}".format(book['book_title']))
     urls = book['urls']
     if len(urls) == 0:
         return False
@@ -200,6 +215,7 @@ def download_book(book, output_dir, cover=False):
             # if succeed, update the name from Content-Disposition
             if 'Content-Disposition' in r.headers.keys():
                 name = r.headers['Content-Disposition'].split('filename=')[-1].strip('"')
+            # tqdm.write(f'Saving {name}')
             open(os.path.join(output_dir, name), 'wb').write(r.content)
             return True
         except:
@@ -208,7 +224,32 @@ def download_book(book, output_dir, cover=False):
     return False
 
 
-def crawl_libgen(query, output_dir, index_file='index.json', cover=False, download=True):
+### Multi Thread downloading
+def download_book_multi_threaded(index, output_dir, cover=False):
+    with ThreadPoolExecutor() as executor:
+        futures = [executor.submit(download_book, book, output_dir, cover) for book in index if not book['download']]
+        print(f'Waiting for {len(futures)} downloads to complete out of {len(index)}...')
+        count = 0
+
+        # Process the results as they complete
+        for future in tqdm(as_completed(futures), total=len(futures), desc='Downloading books'):
+            success = future.result()
+            if success:
+                count += 1
+                book_id = future.args[0]['id']
+                # set index
+                for book in index:
+                    if book['id'] == book_id:
+                        book['download'] = True
+                        break
+    
+    print(f'Downloaded {count} books out of {len(index)}.')
+    # save index
+    with open(os.path.join(output_dir, 'index.json'), 'w') as f:
+        json.dump(index, f, indent=4, ensure_ascii=False)
+
+
+def crawl_libgen_multi_threaded(query, output_dir, index_file='index.json', cover=False, download=True):
     index = []
     # If has index file, load it
     if os.path.exists(os.path.join(output_dir, index_file)):
@@ -219,42 +260,40 @@ def crawl_libgen(query, output_dir, index_file='index.json', cover=False, downlo
     else:
         no_index = True
 
-    # Go through all the pages until index is empty
-    page_num = 1
-    while no_index:
-        print(f'Crawling page {page_num}...')
-        query = query.replace(' ', '+')
-        page_index = crawl_page(query, page_num)
-        if len(page_index) == 0:
-            break
-        index.extend(page_index)
-        page_num += 1
+    # Multi-threaded crawling
+    # Get total files
+    if no_index:
+        base_url = SEARCH_URL
+        params = PARAM_PATTERN.copy()
+        params['req'] = query
+        first_page = get_page(base_url, params=params).content
+        total_num = find_total_num(first_page)
+        num_pages = ((total_num + PARAM_PATTERN['res'] - 1) // PARAM_PATTERN['res'])
+        print(f"Total number of books: {total_num}")
+        print(f"Total number of pages: {num_pages}")
+        
+        with ThreadPoolExecutor() as executor:
+            futures = [executor.submit(crawl_page, query, page_num) for page_num in range(1, num_pages + 1)]
+
+            # Process the results as they complete
+            for future in tqdm(as_completed(futures), desc='Crawling pages', total=len(futures)):
+                page_index = future.result()
+                index.extend(page_index)
     
-    print(f'Found {len(index)} books.')
+    print(f'Parse {len(index)} books.')
     
     # Try to download each book
-    print(f'Saving books to output directory {output_dir}')
 
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    count = 0
-    for book in tqdm(index, desc='Downloading books'):
-        if download:
-            success = download_book(book, output_dir, cover)
-        if success:
-            count += 1
-            book['download'] = True
-        
-    print(f'Downloaded {count} out of {len(index)} books.')
-
-    # Save the index
-    with open(os.path.join(output_dir, index_file), 'w', encoding='utf-8') as f:
-        json.dump(index, f, indent=2, ensure_ascii=False)
+    if download:
+        print(f'Saving books to output directory {output_dir}')
+        download_book_multi_threaded(index, output_dir, cover)
 
 
 ### test
 if __name__ == '__main__':
     query = 'Graduate Texts in Mathematics'
-    output_dir = '/data/xukp/gtm_libgen'
-    crawl_libgen(query, output_dir)
+    output_dir = './data/xukp/gtm_libgen_multi_threaded'
+    crawl_libgen_multi_threaded(query, output_dir)

@@ -200,6 +200,7 @@ def download_book(book, output_dir, cover=False):
             # if succeed, update the name from Content-Disposition
             if 'Content-Disposition' in r.headers.keys():
                 name = r.headers['Content-Disposition'].split('filename=')[-1].strip('"')
+            tqdm.write(f'Saving {name}')
             open(os.path.join(output_dir, name), 'wb').write(r.content)
             return True
         except:
@@ -240,8 +241,12 @@ def crawl_libgen(query, output_dir, index_file='index.json', cover=False, downlo
 
     count = 0
     for book in tqdm(index, desc='Downloading books'):
-        if download:
+        if download and not book['download']:
             success = download_book(book, output_dir, cover)
+        elif not download:
+            success = False
+        else:
+            success = True
         if success:
             count += 1
             book['download'] = True
