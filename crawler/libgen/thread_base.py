@@ -41,7 +41,7 @@ def get_page(url, params=None, **kwargs):
 
 ### Multi Thread Settings
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from threading import Lock
+MAX_WORKERS=4
 
 # tool: find total file number
 def find_total_num(first_page: str):
@@ -226,7 +226,7 @@ def download_book(book, output_dir, cover=False):
 
 ### Multi Thread downloading
 def download_book_multi_threaded(index, output_dir, cover=False):
-    with ThreadPoolExecutor() as executor:
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         futures = [executor.submit(download_book, book, output_dir, cover) for book in index if not book['download']]
         print(f'Waiting for {len(futures)} downloads to complete out of {len(index)}...')
         count = 0
@@ -271,7 +271,7 @@ def crawl_libgen_multi_threaded(query, output_dir, index_file='index.json', cove
         print(f"Total number of books: {total_num}")
         print(f"Total number of pages: {num_pages}")
         
-        with ThreadPoolExecutor() as executor:
+        with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
             futures = [executor.submit(crawl_page, query, page_num) for page_num in range(1, num_pages + 1)]
 
             # Process the results as they complete
