@@ -28,7 +28,7 @@ def backoff_hook(_details):
     tqdm.write("Retrying...")
 
 import backoff
-@backoff.on_exception(backoff.expo, Exception, max_tries=3, max_time=300, on_backoff=backoff_hook)
+@backoff.on_exception(backoff.expo, Exception, max_tries=5, max_time=300, on_backoff=backoff_hook)
 def get_page(url, params=None, **kwargs):
     """
         Get the page content
