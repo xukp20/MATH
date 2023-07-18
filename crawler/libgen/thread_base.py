@@ -15,7 +15,7 @@ PARAM_PATTERN = {
     'view': 'simple',
     'phrase': 1,
     'column': 'def',
-    'res': 100,     # max number of results
+    'res': 25,     # max number of results
     'sort': 'def',
     'sortMode': 'ASC',
 }
