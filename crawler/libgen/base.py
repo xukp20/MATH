@@ -210,6 +210,7 @@ def download_book(book, output_dir, cover=False):
 
 
 def crawl_libgen(query, output_dir, index_file='index.json', cover=False, download=True):
+    index = []
     # If has index file, load it
     if os.path.exists(os.path.join(output_dir, index_file)):
         print(f'Loading index file {index_file}...')
@@ -221,7 +222,6 @@ def crawl_libgen(query, output_dir, index_file='index.json', cover=False, downlo
 
     # Go through all the pages until index is empty
     page_num = 1
-    index = []
     while no_index:
         print(f'Crawling page {page_num}...')
         query = query.replace(' ', '+')
@@ -257,5 +257,5 @@ def crawl_libgen(query, output_dir, index_file='index.json', cover=False, downlo
 ### test
 if __name__ == '__main__':
     query = 'Graduate Texts in Mathematics'
-    output_dir = '/data/gtm_libgen'
+    output_dir = '/data/xukp/gtm_libgen'
     crawl_libgen(query, output_dir)
