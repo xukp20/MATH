@@ -15,12 +15,29 @@ PARAM_PATTERN = {
     'view': 'simple',
     'phrase': 1,
     'column': 'def',
-    'res': 100,     # max number of results
+    'res': 25,     # max number of results
     'sort': 'def',
     'sortMode': 'ASC',
 }
 
+PROXIES = {'https': 'http://127.0.0.1:7890', 'http': 'http://127.0.0.1:7890'}
 
+### Tool
+# use backoff to help recover from exception
+def backoff_hook(_details):
+    tqdm.write("Retrying...")
+
+import backoff
+@backoff.on_exception(backoff.expo, Exception, max_tries=3, max_time=300, on_backoff=backoff_hook)
+def get_page(url, params=None, **kwargs):
+    """
+        Get the page content
+    """
+    if params is None:
+        return requests.get(url, proxies=PROXIES, **kwargs)
+    else:
+        return requests.get(url, params=params, proxies=PROXIES, **kwargs)
+    
 
 ### Build index
 
@@ -28,11 +45,12 @@ def parse_mirror1(page_url):
     """
         Parse the library.lol mirror page for several download links
     """
+    # print("parse " + page_url)
     # first h2 of download div is the get url
-    download_page = requests.get(page_url)
-    soup = BeautifulSoup(download_page.content, 'html.parser')
     # find id="download" div
     try:
+        download_page = get_page(page_url)
+        soup = BeautifulSoup(download_page.content, 'html.parser')
         download_div = soup.find('div', id='download')
     except:
         return None, None
@@ -57,10 +75,12 @@ def parse_mirror2(page_url):
     """
         Parse libgen.lc download page
     """
-    download_page = requests.get(page_url)
-    soup = BeautifulSoup(download_page.content, 'html.parser')
+    # print("parse " + page_url)
+
     # find table/tbody/tr/td which align="center"/a
     try:
+        download_page = get_page(page_url)
+        soup = BeautifulSoup(download_page.content, 'html.parser')
         get_url = soup.find('table').find('tr').find('td', align='center').find('a')['href']
     except:
         get_url = None
@@ -79,7 +99,10 @@ def crawl_page(query, page_num):
     params['page'] = page_num
     
     # Send a GET request to Libgen
-    response = requests.get(base_url, params=params)
+    try:
+        response = get_page(base_url, params=params)
+    except:
+        return []
     
     # Parse the HTML content
     soup = BeautifulSoup(response.content, 'html.parser')
@@ -94,7 +117,7 @@ def crawl_page(query, page_num):
         return index
     
     # Process each row in the table (except the header)
-    for row in table.find_all('tr')[1:]:
+    for row in tqdm(table.find_all('tr')[1:], desc="Parsing book info"):
         columns = row.find_all('td')
         
         # Extract relevant information from the columns
@@ -151,7 +174,7 @@ def download_book(book, output_dir, cover=False):
         - If starts with http, download directly and get the file name as the finally part
         - Else (get.php) add LIBGEN_PREFIX and download, use title as the file name
     """
-    print(book)
+    tqdm.write("Downloading {}".format(book['book_title']))
     urls = book['urls']
     if len(urls) == 0:
         return False
@@ -174,7 +197,7 @@ def download_book(book, output_dir, cover=False):
             download_url = LIBGEN_PREFIX + url
         try:
             print("requesting {}...".format(download_url))
-            r = requests.get(download_url, allow_redirects=True)
+            r = get_page(download_url, allow_redirects=True)
             # if succeed, update the name from Content-Disposition
             if 'Content-Disposition' in r.headers.keys():
                 name = r.headers['Content-Disposition'].split('filename=')[-1].strip('"')
@@ -225,5 +248,5 @@ def crawl_libgen(query, output_dir, index_file='index.json', cover=False, downlo
 ### test
 if __name__ == '__main__':
     query = 'Graduate Texts in Mathematics'
-    output_dir = './output'
+    output_dir = '/data/gtm_libgen'
     crawl_libgen(query, output_dir)
