@@ -196,7 +196,6 @@ def download_book(book, output_dir, cover=False):
             # download from libgen.rocks
             download_url = LIBGEN_PREFIX + url
         try:
-            print("requesting {}...".format(download_url))
             r = get_page(download_url, allow_redirects=True)
             # if succeed, update the name from Content-Disposition
             if 'Content-Disposition' in r.headers.keys():
