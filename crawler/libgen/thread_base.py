@@ -192,7 +192,7 @@ def download_book(book, output_dir, cover=False):
     # tqdm.write("Downloading {}".format(book['book_title']))
     urls = book['urls']
     if len(urls) == 0:
-        return False
+        return False, book['id']
     name = book['book_title'] + '.' + book['extension']
     for url in urls:
         if url.startswith('http'):
@@ -201,7 +201,7 @@ def download_book(book, output_dir, cover=False):
 
     if not cover and os.path.exists(os.path.join(output_dir, name)):
         print(f'File {name} already exists.')
-        return False
+        return False, book['id']
     
     # download
     for url in urls:
@@ -217,11 +217,11 @@ def download_book(book, output_dir, cover=False):
                 name = r.headers['Content-Disposition'].split('filename=')[-1].strip('"')
             # tqdm.write(f'Saving {name}')
             open(os.path.join(output_dir, name), 'wb').write(r.content)
-            return True
+            return True, book['id']
         except:
             continue
 
-    return False
+    return False, book['id']
 
 
 ### Multi Thread downloading
@@ -233,13 +233,12 @@ def download_book_multi_threaded(index, output_dir, cover=False):
 
         # Process the results as they complete
         for future in tqdm(as_completed(futures), total=len(futures), desc='Downloading books'):
-            success = future.result()
+            success, id = future.result()
             if success:
                 count += 1
-                book_id = future.args[0]['id']
                 # set index
                 for book in index:
-                    if book['id'] == book_id:
+                    if book['id'] == id:
                         book['download'] = True
                         break
     
