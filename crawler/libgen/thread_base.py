@@ -295,5 +295,5 @@ def crawl_libgen_multi_threaded(query, output_dir, index_file='index.json', cove
 ### test
 if __name__ == '__main__':
     query = 'Graduate Texts in Mathematics'
-    output_dir = './data/xukp/gtm_libgen_multi_threaded'
+    output_dir = '/data/xukp/gtm_libgen_multi_threaded'
     crawl_libgen_multi_threaded(query, output_dir)
