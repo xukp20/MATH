@@ -52,6 +52,7 @@ def find_total_num(first_page: str):
         table = soup.find_all('table')[1]
         total_num = int(table.find('tr').find('td', align='left').find('font').text.split(' ')[0])
     except:
+        print(first_page)
         total_num = 0
     return total_num
 
@@ -184,6 +185,7 @@ def crawl_page(query, page_num):
 
 ### Download files
 LIBGEN_PREFIX = "https://libgen.rocks/"
+CHUNK_SIZE = 4096
 def download_book(book, output_dir, cover=False):
     """
         Download the book from any of the urls
@@ -211,16 +213,24 @@ def download_book(book, output_dir, cover=False):
         else:
             # download from libgen.rocks
             download_url = LIBGEN_PREFIX + url
-        try:
-            r = get_page(download_url, allow_redirects=True)
-            # if succeed, update the name from Content-Disposition
-            if 'Content-Disposition' in r.headers.keys():
-                name = r.headers['Content-Disposition'].split('filename=')[-1].strip('"')
-            # tqdm.write(f'Saving {name}')
-            open(os.path.join(output_dir, name), 'wb').write(r.content)
-            return True, book['id']
-        except:
-            continue
+        
+        tries = 0
+        tqdm.write(download_url)
+        
+        while tries < 5:
+            try:
+                r = requests.get(download_url, stream=True)
+                # if succeed, update the name from Content-Disposition
+                if 'Content-Disposition' in r.headers.keys():
+                    name = r.headers['Content-Disposition'].split('filename=')[-1].strip('"')
+                # tqdm.write(f'Saving {name}')
+                with open(os.path.join(output_dir, name), 'wb') as fd:
+                    for chunk in r.iter_content(CHUNK_SIZE):
+                        fd.write(chunk)
+            
+                return True, book['id'] 
+            except:
+                tries += 1
 
     return False, book['id']
 
@@ -245,7 +255,7 @@ def download_book_multi_threaded(index, output_dir, cover=False):
     
     print(f'Downloaded {count} books out of {len(index)}.')
     # save index
-    with open(os.path.join(output_dir, 'index.json'), 'w') as f:
+    with open(os.path.join(output_dir, 'index.json'), 'w', encoding='utf-8') as f:
         json.dump(index, f, indent=4, ensure_ascii=False)
 
 
@@ -266,7 +276,14 @@ def crawl_libgen_multi_threaded(query, output_dir, index_file='index.json', cove
         base_url = SEARCH_URL
         params = PARAM_PATTERN.copy()
         params['req'] = query
-        first_page = get_page(base_url, params=params).content
+        
+        retry = 0
+        while retry < 5:
+            first_page = get_page(base_url, params=params).content
+            if first_page != b'':
+                break
+            retry += 1
+
         total_num = find_total_num(first_page)
         num_pages = ((total_num + PARAM_PATTERN['res'] - 1) // PARAM_PATTERN['res'])
         print(f"Total number of books: {total_num}")
@@ -294,6 +311,6 @@ def crawl_libgen_multi_threaded(query, output_dir, index_file='index.json', cove
 
 ### test
 if __name__ == '__main__':
-    query = 'Graduate Texts in Mathematics'
-    output_dir = '/data/xukp/gtm_libgen_multi_threaded'
+    query = 'GTM'
+    output_dir = '/data/xukp/libgen_test'
     crawl_libgen_multi_threaded(query, output_dir)

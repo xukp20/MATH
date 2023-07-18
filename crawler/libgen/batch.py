@@ -10,7 +10,7 @@ import os
 def get_parser():
     parser = argparse.ArgumentParser(description='Download a batch of dirs from keyword json')
     parser.add_argument('-k', '--keyword_json', type=str, help='keyword json file', default='./keywords.json')
-    parser.add_argument('-b', '--base_dir', type=str, help='base output dir', default='/data/xukp/libgen')
+    parser.add_argument('-b', '--base_dir', type=str, help='base output dir', default='./data/xukp/libgen')
     parser.add_argument('-n', '--no_download', action='store_true', help='do not download')
     parser.add_argument('-c', '--cover', action='store_true', help='download cover')
     
