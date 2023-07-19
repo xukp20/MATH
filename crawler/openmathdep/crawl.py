@@ -99,11 +99,22 @@ if __name__ == '__main__':
         print('No path specified.')
         exit(0)
 
+    if os.path.exists('urls.json'):
+        with open('urls.json', 'r') as f:
+            urls = json.load(f)
+        download_book_multi_threaded(urls, False)
+        exit(0)
+        
     # get dirs
     dirs = get_dirs()
     # get file urls
     urls = []
     for dir in tqdm(dirs):
         urls += get_file_urls(dir)
+
+    # save urls
+    with open('urls.json', 'w', encoding='utf-8') as f:
+        json.dump(urls, f, indent=4)
+
     # download
     download_book_multi_threaded(urls, False)
