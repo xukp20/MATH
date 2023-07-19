@@ -103,7 +103,7 @@ if __name__ == '__main__':
     dirs = get_dirs()
     # get file urls
     urls = []
-    for dir in dirs:
+    for dir in tqdm(dirs):
         urls += get_file_urls(dir)
     # download
     download_book_multi_threaded(urls, False)
