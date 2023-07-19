@@ -154,8 +154,19 @@ def crawl_page(query, page_num):
         # libgen.lc
         download_page_2 = columns[10].find('a')['href']
         
-        library_get_url, cloudflare_url = parse_mirror1(download_page_1)
-        libgen_get_url = parse_mirror2(download_page_2)
+        tries = 0
+        while tries < 5:
+            library_get_url, cloudflare_url = parse_mirror1(download_page_1)
+            if library_get_url is not None or cloudflare_url is not None:
+                break
+            tries += 1
+        
+        tries = 0
+        while tries < 3:
+            libgen_get_url = parse_mirror2(download_page_2)
+            if libgen_get_url is not None:
+                break
+            tries += 1
 
         # not None urls
         urls = []

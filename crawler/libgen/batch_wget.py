@@ -33,6 +33,9 @@ def download_book(book, quiet=False):
             if os.system(cmd) == 0:
                 return True, book['id']
             tries += 1
+        tqdm.write("Unable to get from {}".format(url))
+    if len(urls) == 0:
+        tqdm.write("No available url.")
     tqdm.write(f'Failed to download book {book["book_title"]}')
     return False, book['id']
 
