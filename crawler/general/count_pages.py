@@ -1,15 +1,20 @@
 import os
 import PyPDF2
+from tqdm import tqdm
 
 def count_pages_in_pdf(pdf_file):
     with open(pdf_file, 'rb') as file:
-        reader = PyPDF2.PdfReader(file)
-        return len(reader.pages)
+        try:
+            reader = PyPDF2.PdfReader(file)
+            return len(reader.pages)
+        except:
+            print("find broken pdf: {}".format((pdf_file)))
+            return 0
 
 def count_pages_in_directory(directory_path):
     total_pages = 0
     for root, dirs, files in os.walk(directory_path):
-        for filename in files:
+        for filename in tqdm(files, desc=root):
             if filename.lower().endswith('.pdf'):
                 pdf_file_path = os.path.join(root, filename)
                 total_pages += count_pages_in_pdf(pdf_file_path)
