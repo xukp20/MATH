@@ -306,6 +306,9 @@ def crawl_libgen_multi_threaded(query, output_dir, index_file='index.json', cove
 
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
+    # save index
+    with open(os.path.join(output_dir, 'index.json'), 'w', encoding='utf-8') as f:
+        json.dump(index, f, indent=4, ensure_ascii=False)
 
     if download:
         print(f'Saving books to output directory {output_dir}')
