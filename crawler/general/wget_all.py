@@ -16,15 +16,15 @@ def main():
     path = args.path
     list_file = args.list
 
-    with open(list_file, 'r') as f:
-        urls = json.load(f)
-
     # change to the path
     if path is not None:
         os.chdir(path)
     else:
         print('No path specified.')
         return
+    
+    with open(list_file, 'r') as f:
+        urls = json.load(f)
     
     for url in tqdm(urls):
         cmd = f'wget -c {url}'
