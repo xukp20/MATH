@@ -26,6 +26,8 @@ def main():
     with open(list_file, 'r') as f:
         urls = json.load(f)
     
+    os.system('export http_proxy=http://127.0.0.1:7890')
+    os.system('export https_proxy=http://127.0.0.1:7890')
     for url in tqdm(urls):
         cmd = f'wget -c {url}'
         if os.system(cmd) != 0:
