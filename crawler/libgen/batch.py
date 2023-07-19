@@ -11,7 +11,7 @@ def get_parser():
     parser = argparse.ArgumentParser(description='Download a batch of dirs from keyword json')
     parser.add_argument('-k', '--keyword_json', type=str, help='keyword json file', default='./keywords.json')
     parser.add_argument('-b', '--base_dir', type=str, help='base output dir', default='./data/xukp/libgen')
-    parser.add_argument('-n', '--no_download', action='store_true', help='do not download')
+    parser.add_argument('-d', '--download', action='store_true', help='download')
     parser.add_argument('-c', '--cover', action='store_true', help='download cover')
     
     return parser
@@ -21,7 +21,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     keyword_json = args.keyword_json
     base_dir = args.base_dir
-    no_download = args.no_download
+    download = args.download
     cover = args.cover
 
     with open(keyword_json, 'r') as f:
@@ -33,4 +33,4 @@ if __name__ == '__main__':
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        crawl_libgen_multi_threaded(keyword, output_dir, download=not no_download, cover=cover)
+        crawl_libgen_multi_threaded(keyword, output_dir, download=download, cover=cover)
