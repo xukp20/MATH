@@ -183,6 +183,8 @@ def download_book(book, output_dir, cover=False):
         if url.startswith('http'):
             # download directly
             name = url.split('/')[-1]
+            if name.find('filename=') != -1:
+                name = name.split('filename=')[-1]
 
     if not cover and os.path.exists(os.path.join(output_dir, name)):
         print(f'File {name} already exists.')
