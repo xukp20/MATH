@@ -36,9 +36,9 @@ def convert_book_group(exist, group, quiet=False, duplicate='rename', dir='.'):
     for i in range(len(group)):
         cmd = f'ebook-convert "{os.path.join(dir, group[i])}" "{os.path.join(dir, outputs[i])}"' + (' > /dev/null 2>&1' if quiet else '')
         if os.system(cmd) != 0:
-            tqdm.write(f'Failed to convert book {group[i]}')
+            tqdm.write(f'Failed to convert book\n {group[i]}\n')
         else:
-            tqdm.write(f'Converted book {group[i]} to {outputs[i]}')
+            tqdm.write(f'Converted book\n {group[i]}\n to\n {outputs[i]}\n')
             count += 1
     
     return count
@@ -84,3 +84,7 @@ def main():
             count += future.result()
         
         print(f'Converted {count} books out of {len(files)}')
+        
+
+if __name__ == '__main__':
+    main()
