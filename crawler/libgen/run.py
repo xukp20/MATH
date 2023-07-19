@@ -3,7 +3,7 @@ if __name__ == '__main__':
     import os
     from thread_base import crawl_libgen_multi_threaded
     
-    OUTPUT_DIR = './data/xukp/libgen'
+    OUTPUT_DIR = '/data/xukp/libgen'
     with open('keywords.json', 'r') as f:
         keywords = json.load(f)
     for keyword in keywords:
