@@ -22,6 +22,9 @@ def count_files(index_file, base_path):
     for item in tqdm(index_data):
         if item.get('clean', {}).get('rm', False) is True:
             continue
+            
+        if item.get('mark', {}).get('math') != 'yes':
+            continue
 
         relative_path = item.get('path')
         full_path = os.path.join(base_path, relative_path)
@@ -79,7 +82,7 @@ def get_parser():
     parser = argparse.ArgumentParser(description='Count the pdf pages and total size')
     parser.add_argument('-b', '--base_path', type=str, help='base path', default='/data/xukp')
     parser.add_argument('-i', '--input', type=str, help='input index file', default='index.json')
-
+    parser.add_argument('-m', '--math', action='store_true', help='count math')
     return parser
 
 if __name__ == "__main__":
