@@ -5,6 +5,8 @@ BROKEN=1
 DUP=1
 RELATED=1
 
+BASE=/data/xukp
+
 if [ $BUILD -eq 1 ]; then
     echo "Building"
     python build_index.py -f include_dirs.json

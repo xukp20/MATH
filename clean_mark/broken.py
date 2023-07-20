@@ -5,6 +5,7 @@
 import PyPDF2
 import argparse
 import json
+import os
 from tqdm import tqdm
 
 def is_pdf_broken(pdf_file):
@@ -20,6 +21,7 @@ def is_pdf_broken(pdf_file):
 
 def get_parser():
     parser = argparse.ArgumentParser(description='Mark the duplicate books in an index.json')
+    parser.add_argument('-b', '--base_path', type=str, help='base path', default='/data/xukp')
     parser.add_argument('-i', '--input', type=str, help='input index file', default='index.json')
     parser.add_argument('-o', '--output', type=str, help='output index file', default='index.json')
     
@@ -40,8 +42,12 @@ if __name__ == '__main__':
     # find broken pdfs
     broken_pdfs = []
     for file in tqdm(file_names):
-        if is_pdf_broken(file):
+        full_path = os.path.join(args.base_path, file)
+        if is_pdf_broken(full_path):
             broken_pdfs.append(file)
+
+    print(f"Found {len(broken_pdfs)} broken PDF files out of {len(file_names)} files.")
+    
     # mark the broken books
     for book in index:
         if book['path'] in broken_pdfs:
@@ -53,4 +59,3 @@ if __name__ == '__main__':
     # set index
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(index, f, indent=4, ensure_ascii=False)
-        
