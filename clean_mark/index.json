@@ -361,8 +361,8 @@
     {
         "path": "libgen/amc/(AMC pamphlet 706-177.) United States. Department of the Army. - Engineering design handbook _ explosives series properties of explosives of military interest.-U.S. Army Materiel Command (1971).pdf",
         "clean": {
-            "broken": true,
-            "rm": false
+            "broken": false,
+            "rm": true
         },
         "mark": {
             "math": "no",
@@ -741,8 +741,8 @@
     {
         "path": "libgen/gre_math/Jeff Kolby, Derrick Vaughn - GRE Math Tests-Nova Press (2014).pdf",
         "clean": {
-            "broken": true,
-            "rm": false
+            "broken": false,
+            "rm": true
         },
         "mark": {
             "math": "yes",
@@ -2465,8 +2465,8 @@
     {
         "path": "libgen/math_for_dummies/Mark Zegarelli - SAT Math For Dummies-For Dummies (2010).pdf",
         "clean": {
-            "broken": true,
-            "rm": false
+            "broken": false,
+            "rm": true
         },
         "mark": {
             "math": "yes",
@@ -2970,8 +2970,8 @@
     {
         "path": "libgen/math_for_dummies/(For Dummies) Mary Jane Sterling - Finite Math for Dummies-Wiley (2018).pdf",
         "clean": {
-            "broken": true,
-            "rm": false
+            "broken": false,
+            "rm": true
         },
         "mark": {
             "math": "yes",
@@ -3022,8 +3022,8 @@
     {
         "path": "libgen/math_for_dummies/(For Dummies (Math & Science)) Rumsey, Deborah J - Statistics II for Dummies-For Dummies (2009).pdf",
         "clean": {
-            "broken": true,
-            "rm": false
+            "broken": false,
+            "rm": true
         },
         "mark": {
             "math": "yes",
@@ -4223,8 +4223,8 @@
     {
         "path": "openmathdep/Introduction_Lie_Groups_Lie_Algebras-Walde.pdf",
         "clean": {
-            "broken": true,
-            "rm": false
+            "broken": false,
+            "rm": true
         },
         "mark": {
             "math": "yes",
@@ -12382,8 +12382,8 @@
     {
         "path": "other_books/mfg.pdf",
         "clean": {
-            "broken": true,
-            "rm": false
+            "broken": false,
+            "rm": true
         },
         "mark": {
             "math": "unknown",
@@ -12421,7 +12421,7 @@
     {
         "path": "other_books/int-algebra.pdf",
         "clean": {
-            "broken": true,
+            "broken": false,
             "rm": true
         },
         "mark": {}

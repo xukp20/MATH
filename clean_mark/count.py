@@ -5,6 +5,7 @@
 import os
 import json
 import PyPDF2
+from tqdm import tqdm
 
 def count_files(index_file, base_path):
     total_pages = 0
@@ -18,7 +19,7 @@ def count_files(index_file, base_path):
     with open(index_file, 'r') as f:
         index_data = json.load(f)
 
-    for item in index_data:
+    for item in tqdm(index_data):
         if item.get('clean', {}).get('rm', False) is True:
             continue
 
@@ -27,6 +28,8 @@ def count_files(index_file, base_path):
 
         if os.path.exists(full_path):
             num_pages, file_size_bytes = count_pages_and_size_pdf(full_path)
+            if num_pages == -1:
+                continue
             total_pages += num_pages
             total_size_bytes += file_size_bytes
 
@@ -54,8 +57,12 @@ def count_pages_and_size_pdf(pdf_file):
     file_size_bytes = os.path.getsize(pdf_file)
 
     with open(pdf_file, 'rb') as f:
-        pdf_reader = PyPDF2.PdfFileReader(f)
-        num_pages = pdf_reader.getNumPages()
+        try:
+            pdf_reader = PyPDF2.PdfReader(f)
+            num_pages = len(pdf_reader.pages)
+        except:
+            tqdm.write("Error reading pdf")
+            num_pages = -1
 
     return num_pages, file_size_bytes
 
@@ -80,8 +87,4 @@ if __name__ == "__main__":
     index_file = args.input
     base_path = args.base_path
 
-    total_pages, total_size_bytes = count_files(index_file, base_path)
-    total_size_mb = bytes_to_mb(total_size_bytes)
-
-    print(f"Total Pages: {total_pages}")
-    print(f"Total Size (MB): {total_size_mb:.2f} MB")
+    count_files(index_file, base_path)
