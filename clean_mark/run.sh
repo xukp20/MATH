@@ -1,4 +1,4 @@
-!#/bin/bash
+#/bin/bash
 
 BUILD=1
 BROKEN=1
