@@ -16,8 +16,8 @@ with open(KEY_PATH, 'r') as f:
 openai.organization = org
 openai.api_key = api_key
 # my tencent proxy
-PROXY_API = "https://service-8jyxuk58-1306666728.usw.apigw.tencentcs.com/v1"
-openai.api_base = PROXY_API
+# PROXY_API = "https://service-8jyxuk58-1306666728.usw.apigw.tencentcs.com/v1"
+# openai.api_base = PROXY_API
 
 
 GPT3dot5_count = 0

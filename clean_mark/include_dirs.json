@@ -1,0 +1,13 @@
+[
+    "libgen/act_math",
+    "libgen/amc",
+    "libgen/gmat_math",
+    "libgen/gre_math",
+    "libgen/imo",
+    "libgen/math_for_dummies",
+    "libgen/mcat_math",
+    "libgen/sat_math",
+    "libgen/usamo",
+    "openmathdep",
+    "other_books"
+]
