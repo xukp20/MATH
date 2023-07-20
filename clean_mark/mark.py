@@ -77,7 +77,7 @@ def get_parser():
     return parser
 
 from openai_req import gpt3dot5_req
-BATCH_SIZE = 3
+BATCH_SIZE = 1
 
 def main():
     args = get_parser().parse_args()
@@ -106,7 +106,11 @@ def main():
             
             tries = 0
             while tries < 3:
-                result = gpt3dot5_req(messages, temperature=0, max_tokens=300, top_p=1)
+                try:
+                    result = gpt3dot5_req(messages, temperature=0, max_tokens=300, top_p=1)
+                except Exception as e:
+                    print(e)
+                    continue
                 answers = result.split('\n')
                 answers = [answer.split(',') for answer in answers]
 
