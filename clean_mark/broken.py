@@ -13,7 +13,7 @@ def is_pdf_broken(pdf_file):
         with open(pdf_file, 'rb') as file:
             reader = PyPDF2.PdfReader(file)
             num_pages = len(reader.pages)
-            return num_pages > 0  # If the PDF has at least one page, it is not considered broken.
+            return num_pages == 0  # If the PDF has at least one page, it is not considered broken.
     except Exception as e:
         # An exception occurred while trying to read the PDF, indicating it is broken.
         print(f"Error reading PDF file: {e}")

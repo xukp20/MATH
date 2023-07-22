@@ -10,5 +10,6 @@ prm800k/
 **/*.pdf
 !clean_mark/index.json
 !clean_mark/include_dirs.json
+!clean_mark/recheck_index.json
 **/*.epub
 **/*.mobi
