@@ -26,6 +26,12 @@ if __name__ == '__main__':
     text = []
     work = []
 
+    with open(text_file, 'r') as f:
+        text = json.load(f)
+    
+    with open(work_file, 'r') as f:
+        work = json.load(f)
+
     for item in index:
         if item['clean']['rm'] or item['mark']['math'] != 'yes':
             continue
@@ -71,11 +77,11 @@ if __name__ == '__main__':
                     elif kind == 'work':
                         work.append(new_item)
 
-    with open(text_file, 'w') as f:
-        json.dump(text, f, indent=4, ensure_ascii=False)
+        with open(text_file, 'w') as f:
+            json.dump(text, f, indent=4, ensure_ascii=False)
 
-    with open(work_file, 'w') as f:
-        json.dump(work, f, indent=4, ensure_ascii=False)
+        with open(work_file, 'w') as f:
+            json.dump(work, f, indent=4, ensure_ascii=False)
 
 
 

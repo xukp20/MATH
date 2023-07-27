@@ -7,7 +7,7 @@ import json
 import PyPDF2
 from tqdm import tqdm
 
-def count_files(index_file, base_path):
+def count_files(index_file, base_path, args):
     total_pages = 0
     total_size_bytes = 0
 
@@ -20,11 +20,13 @@ def count_files(index_file, base_path):
         index_data = json.load(f)
 
     for item in tqdm(index_data):
-        if item.get('clean', {}).get('rm', False) is True:
-            continue
+        if not args.all:
+            if item.get('clean', {}).get('rm', False) is True:
+                continue
             
-        if item.get('mark', {}).get('math') != 'yes':
-            continue
+            if args.math:
+                if item.get('mark', {}).get('math') != 'yes':
+                    continue
 
         relative_path = item.get('path')
         full_path = os.path.join(base_path, relative_path)
@@ -83,6 +85,7 @@ def get_parser():
     parser.add_argument('-b', '--base_path', type=str, help='base path', default='/data/xukp')
     parser.add_argument('-i', '--input', type=str, help='input index file', default='index.json')
     parser.add_argument('-m', '--math', action='store_true', help='count math')
+    parser.add_argument('-a', '--all', action='store_true', help='count all')
     return parser
 
 if __name__ == "__main__":
@@ -90,4 +93,4 @@ if __name__ == "__main__":
     index_file = args.input
     base_path = args.base_path
 
-    count_files(index_file, base_path)
+    count_files(index_file, base_path, args)
