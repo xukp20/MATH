@@ -7,7 +7,7 @@ import json
 import argparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
-MAX_THREADS = 2
+MAX_THREADS = 1
 
 def get_parser():
     parser = argparse.ArgumentParser(description='Download batch of books from an index.json in a dir by wget')
@@ -19,6 +19,7 @@ def get_parser():
 
 import time
 import random
+LIBGEN_PREFIX = "https://libgen.rocks/"
 def download_book(book, quiet=False):
     # random sleep to avoid being banned
     delay = random.randint(1, 5)
@@ -26,6 +27,9 @@ def download_book(book, quiet=False):
 
     urls = book['urls']
     for url in urls:
+        if not url.startswith('http'):
+            url = LIBGEN_PREFIX + url
+            
         tries = 0
         while tries < 3:
             cmd = f'wget -c {url} > /dev/null 2>&1' if quiet else f'wget -c {url}'
