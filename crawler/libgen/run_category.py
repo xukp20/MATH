@@ -25,7 +25,7 @@ if __name__ == '__main__':
     keyword = categories[i]['category']
     topic_id = categories[i]['topicid']
     output_dir = os.path.join(OUTPUT_DIR, keyword)
-    os.system('python batch_wget.py -i %s -q' % output_dir)
+    os.system('python batch_wget.py -i "%s" -q' % output_dir)
 
 
 
